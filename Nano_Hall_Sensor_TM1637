@@ -1,0 +1,33 @@
+#include <TM1637Display.h>
+
+const int CLK = 6;
+const int DIO = 7;
+const int hallPin = A0;
+const int ledPin = 8;
+
+TM1637Display display(CLK, DIO);
+
+void setup() {
+  pinMode(ledPin, OUTPUT);
+  digitalWrite(ledPin, LOW); // Start with the LED off
+  display.setBrightness(0x0f); // Set brightness to maximum
+}
+
+void loop() {
+  int sensorValue = analogRead(hallPin);
+  float voltage = sensorValue * (5.0 / 1023.0);
+  displayVoltage(voltage);
+  
+  if (sensorValue < 512) { // Adjust threshold as needed
+    digitalWrite(ledPin, HIGH); // Turn LED on when magnet is close
+  } else {
+    digitalWrite(ledPin, LOW); // Turn LED off when magnet is away
+  }
+  
+  delay(100);
+}
+
+void displayVoltage(float voltage) {
+  int displayValue = voltage * 100; // Convert voltage to a whole number representation
+  display.showNumberDecEx(displayValue, 0x40, true); // Display with 2 decimal places
+}
